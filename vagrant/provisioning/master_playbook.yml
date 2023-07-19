@@ -1,0 +1,156 @@
+---
+- hosts: all 
+  become: yes 
+  tasks: 
+  - name: installing linux audit
+    apt: 
+      name: auditd
+      state: latest
+      update_cache: true
+
+  #- name: change permission of KLEE installation script
+  #  file: dest=/home/vagrant/src/AFLandKLEEinstalldir/KLEE_install_30September21.sh mode=a+x 
+
+  - name: Installing AFL++
+    apt:
+      name: afl++
+      state: latest 
+      update_cache: true
+      
+  #- name: change permission of AFL installation script
+  #  file: dest=/home/vagrant/src/AFLandKLEEinstalldir/AFL_install_z1.sh mode=a+x 
+
+  #- name: executing KLEE installation script 
+  #  shell: 
+  #    cmd: ./KLEE_install_30September21.sh
+  #    chdir: /home/vagrant/src/AFLandKLEEinstalldir/
+
+  #- name: executing AFL installation script 
+  #  shell:
+  #   cmd: ./AFL_install_z1.sh 
+  #   chdir: /home/vagrant/src/AFLandKLEEinstalldir/ 
+
+  - name: installing lib-audit, lib-auparse and pyhton3-audit, cmake
+    apt: 
+      name: 
+        - libaudit-dev
+        - libauparse-dev
+        - python3-audit
+        - libseccomp-dev
+        - cmake
+        - python3-pip
+        - bpfcc-tools
+        #- linux-headers-$(uname -r)
+      state: latest 
+      update_cache: true
+
+  - name: compiling and moving the syscallFinder plugin 
+    ansible.builtin.shell: sudo  gcc /home/vagrant/src/syscall_finder_plugin/audisp-plugin.c -o /usr/local/sbin/sbp-audisp-plugin -laudit -lauparse
+  
+
+  - name: Executing CMake for File-Finder src 
+    ansible.builtin.shell: sudo cmake /home/vagrant/src/fileFinder -B /home/vagrant/src/fileFinder
+
+  - name: Compiling File-Finder src 
+    ansible.builtin.shell: sudo make -C /home/vagrant/src/fileFinder
+
+  - name: installing the file finder plugin 
+    ansible.builtin.shell: sudo python3 /home/vagrant/src/fileFinder/installConfigFile.py /home/vagrant/src/fileFinder/AudispPlugin
+
+  - name: Changing configuration of the file finder plugin 
+    ansible.builtin.file: 
+      path: /etc/audit/plugins.d/AudispPlugin.conf
+      owner: root
+      group: root 
+      mode: '0640'
+
+  # - name: Copying the Log Evaluation Tool
+  #   ansible.builtin.copy:
+  #     src: /home/vagrant/src/fileFinder/LogEvaluation
+  #     dest: /home/vagrant/policy_generator_src/file_finder
+  #     mode: '0755'
+  #     remote_src: yes
+
+
+  - name: moving config for syscall_finder 
+    ansible.builtin.shell: sudo cp /home/vagrant/src/syscall_finder_plugin/syscall_finder_config/sbp.conf /etc/audit/plugins.d/
+
+  - name: Setting config file permission accordingly
+    file: /etc/audit/plugins.d/sbp.conf mode=g-w,o-r
+    file: 
+      path: /etc/audit/plugins.d/sbp.conf
+      owner: root
+      group: root 
+
+  - name: installing pyseccomp
+    ansible.builtin.shell: sudo pip3 install pyseccomp
+
+  - name: installing BitVector
+    ansible.builtin.shell: sudo pip3 install BitVector
+
+  - name: installing CFFI
+    ansible.builtin.shell: sudo pip3 install cffi
+
+  - name: installing pytest
+    ansible.builtin.shell: sudo pip3 install pytest
+
+  - name: Marking the fuzzing plugin as executable
+    ansible.builtin.file: 
+      path: /home/vagrant/src/audisp_plugins/fuzzing_plugin.py
+      owner: root 
+      group: root 
+      mode: '0755'
+  - name: moving plugin for fuzzing
+    ansible.builtin.shell: sudo cp /home/vagrant/src/audisp_plugins/fuzzing_plugin.py /usr/local/sbin/fuzzing_plugin.py
+
+  - name: Marking the seccomp plugin as executable
+    ansible.builtin.file: 
+      path: /home/vagrant/src/audisp_plugins/syscall_logger.py 
+      owner: root 
+      group: root 
+      mode: '0755'
+
+  - name: moving plugin for seccomp filtering 
+    ansible.builtin.shell:  sudo cp /home/vagrant/src/audisp_plugins/syscall_logger.py  /usr/local/sbin/syscall_logger.py
+
+  - name: Create Fuzzing Output Dir
+    file:
+      path: /fuzzing/out
+      state: directory
+
+  - name: Create Fuzzing Input Dir
+    file:
+      path: /fuzzing/in
+      state: directory
+
+  - name: Replacing Priority Boost Auditd
+    lineinfile: 
+      path: /etc/audit/auditd.conf
+      regexp: '^(.*)priority_boost =(.*)$' 
+      line: 'priority_boost = 10'
+      backrefs: yes
+
+  - name: Increasing Auditd Queue Depth
+    lineinfile: 
+      path: /etc/audit/auditd.conf
+      regexp: '^(.*)q_depth =(.*)$' 
+      line: 'q_depth = 1000'
+      backrefs: yes
+
+  - name: installing Bubblewrap
+    apt: 
+      name: 
+        - bubblewrap
+      state: latest 
+      update_cache: true
+
+  - name: Setting params for afl-fuzz
+    ansible.builtin.shell: echo core >/proc/sys/kernel/core_pattern
+  
+  - name: Change permission of GLIBC installation script
+    file: dest=/home/vagrant/src/customGLIBC/custom_glibc_install.sh mode=a+x 
+  
+  - name: executing GLIBC installation script 
+    shell: 
+      cmd: ./custom_glibc_install.sh
+      chdir: /home/vagrant/src/customGLIBC

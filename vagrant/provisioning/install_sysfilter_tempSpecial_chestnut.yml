@@ -1,0 +1,106 @@
+---
+- hosts: all 
+  become: yes 
+  tasks: 
+  - name: Installing Dependencies
+    apt: 
+      name: 
+        - build-essential
+        - gdb
+        - libc6-dbg
+        - libreadline-dev
+        - docker.io
+        - python3-pip
+        - clang
+        - libseccomp-dev
+        - ninja-build
+        - cmake
+        - libmpc-dev
+        - texinfo
+
+      state: latest
+      update_cache: true
+    
+
+  - name: Cloning sysfilter
+    git:
+      repo: https://gitlab.com/Egalito/sysfilter
+      dest: /home/vagrant/sysfilter
+      clone: yes
+      update: yes
+
+
+
+  - name: Cloning Chestnut
+    git:
+      repo: https://github.com/IAIK/Chestnut
+      dest: /home/vagrant/chestnut
+      clone: yes
+      update: yes
+      
+  - name: Cloning Temporal-Specialization
+    git:
+      repo: https://github.com/shamedgh/temporal-specialization
+      dest: /home/vagrant/temporal-specialization
+      clone: yes
+      update: yes
+      
+  - name: Change Ownership to Vagrant 
+    shell: 
+      cmd: chown -R vagrant sysfilter; chown -R vagrant chestnut; chown -R vagrant temporal-specialization
+      chdir: /home/vagrant/
+      
+  - name: Building Sysfilter Tool 
+    shell: 
+      cmd:  make -j$(nproc)
+      chdir: /home/vagrant/sysfilter/extraction
+      
+      
+  - name: Running a Test on Sysfilter
+    shell: 
+      cmd:   printf '%s\n' '#include <stdio.h>' 'int main(void) {' 'return 0;' '}' > test.c ; gcc -g test.c -o test.o ;  app/sysfilter_extract -v -o test.json test.o
+      chdir: /home/vagrant/sysfilter/extraction
+      
+  - name: Creating Result dir for Temporal-Specialization
+    file:
+      path: /home/vagrant/temporal-specialization/results
+      state: directory
+  
+  - name: Copy Fix for Build Script 
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/run_command.sh
+      dest: /home/vagrant/temporal-specialization/
+      mode: '0755'
+      remote_src: yes 
+
+  - name: Starting Docker 
+    shell: 
+      cmd:  docker run -d --name artifact-eval --volume /home/vagrant/temporal-specialization/results/:/results taptipalit/temporal-specialization-artifacts:1.0
+      chdir: /home/vagrant/temporal-specialization
+      
+  # - name: Running Test in Docker (eta 10 Minutes)
+  #  shell: 
+  #   cmd:  docker exec -it artifact-eval ./run.sh memcached.libevent
+  #   chdir: /home/vagrant/temporal-specialization   
+
+  - name: Binalyzer Install Pip requirements
+    shell: 
+      cmd:   pip3 install -r requirements.txt
+      chdir: /home/vagrant/chestnut/Binalyzer
+      
+  - name: Building Dynalyzer 
+    shell: 
+      cmd:  make -j$(nproc)
+      chdir: /home/vagrant/chestnut/Dynalyzer  
+
+  - name: Copy Fix for Build Script 
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/download-and-build-fix.sh
+      dest: /home/vagrant/chestnut/Sourcealyzer/
+      mode: '0755'
+      remote_src: yes
+
+  - name: Building Sourcealyzer 
+    shell: 
+      cmd:  ./download-and-build-fix.sh
+      chdir: /home/vagrant/chestnut/Sourcealyzer
