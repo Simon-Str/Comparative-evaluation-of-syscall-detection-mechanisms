@@ -2,12 +2,14 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
- config.vm.define "ubuntu_jammy_desktop"
+
+  config.vm.define "ubuntu_jammy_desktop"
   config.vm.box = "ubuntu/jammy64"
-  config.vm.network "private_network", :type => 'dhcp'
-  
+  #config.vm.network "private_network", :type => 'dhcp'
+  config.vagrant.plugins = "vagrant-vbguest"
+  raise "vagrant-vbguest plugin must be installed" unless Vagrant.has_plugin? "vagrant-vbguest"
   config.vm.provider "virtualbox" do |vb|
-    vb.cpus = 2
+    vb.cpus = 6
     vb.gui = true
     vb.memory = "8192"
     vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
@@ -15,12 +17,14 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--vram", "128"]
     vb.customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']
     vb.customize ['modifyvm', :id, '--draganddrop', 'bidirectional']
-    vb.customize ["modifyvm", :id, "--nic2", "hostonly", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"]
+   # vb.customize ["modifyvm", :id, "--nic2", "hostonly", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"]
   end
   config.vm.synced_folder "vagrant" , "/vagrant", :mount_options => ["ro"]
   config.vm.synced_folder "synced_folder" , "/synced_folder/", type: "virtualbox", :mount_options => ['dmode=777','fmode=775'], automount: true
   config.vm.provision "file", source: "src", destination: "/home/vagrant/"
   config.vm.provision "file", source: "afl_custom_mutators", destination: "/home/vagrant/"
+
+
 
   if Vagrant.has_plugin?("vagrant-vbguest") then
     config.vbguest.installer_options = { running_kernel_modules: ["vboxguest"] }
