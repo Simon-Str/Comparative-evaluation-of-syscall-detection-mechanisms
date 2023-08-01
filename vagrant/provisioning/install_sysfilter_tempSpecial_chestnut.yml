@@ -137,23 +137,25 @@
 
   - name: Extract Call-graph
     shell:
-      cmd:  wpa -print-fp -ander -dump-callgraph /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc
-      cmd:  python3 convertSvfCfgToHumanReadable.py callgraph_final.dot > /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.type.cfg
-      cmd:  spa -condition-cfg /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg
-      cmd:  spa -simple /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg
+      cmd: |
+        wpa -print-fp -ander -dump-callgraph /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc
+        python3 convertSvfCfgToHumanReadable.py callgraph_final.dot > /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.type.cfg
+        spa -condition-cfg /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg
+        spa -simple /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg
       chdir: /home/vagrant/temporal-specialization/
 
 
   - name: Call Function Pointer Target Pruning
     shell:
-      cmd:  python3.7 /home/vagrant/temporal-specialization/python-utils/graphCleaner.py --fpanalysis --funcname main --output /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.new.type.fp.wglobal.cfg --directgraphfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg --funcpointerfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg -c /home/vagrant/temporal-specializationcallgraphs/httpd.apr.svf.type.cfg
+      cmd:  python3 /home/vagrant/temporal-specialization/python-utils/graphCleaner.py --fpanalysis --funcname main --output /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.new.type.fp.wglobal.cfg --directgraphfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg --funcpointerfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg -c /home/vagrant/temporal-specializationcallgraphs/httpd.apr.svf.type.cfg
       chdir: /home/vagrant/temporal-specialization/
 
 
   - name: Create Syscall Stats
     shell:
-      cmd:  mkdir -p outputs; mkdir -p stats
-      cmd: python3 /home/vagrant/temporal-specialization/createSyscallStats.py -c /home/vagrant/temporal-specialization/callgraphs/glibc.callgraph --apptopropertymap /home/vagrant/temporal-specialization/app.to.properties.json --binpath /home/vagrant/temporal-specialization/binaries --outputpath /home/vagrant/temporal-specialization/outputs/ --apptolibmap /home/vagrant/temporal-specialization/app.to.lib.map.json --sensitivesyscalls /home/vagrant/temporal-specialization/sensitive.syscalls --sensitivestatspath /home/vagrant/temporal-specialization/stats/sensitive.stats --syscallreductionpath /home/vagrant/temporal-specialization/stats/syscallreduction.stats --libdebloating --othercfgpath /home/vagrant/temporal-specialization/otherCfgs/ --cfgpath /home/vagrant/temporal-specialization/callgraphs
+      cmd: |
+        mkdir -p outputs; mkdir -p stats
+        python3 /home/vagrant/temporal-specialization/createSyscallStats.py -c /home/vagrant/temporal-specialization/callgraphs/glibc.callgraph --apptopropertymap /home/vagrant/temporal-specialization/app.to.properties.json --binpath /home/vagrant/temporal-specialization/binaries --outputpath /home/vagrant/temporal-specialization/outputs/ --apptolibmap /home/vagrant/temporal-specialization/app.to.lib.map.json --sensitivesyscalls /home/vagrant/temporal-specialization/sensitive.syscalls --sensitivestatspath /home/vagrant/temporal-specialization/stats/sensitive.stats --syscallreductionpath /home/vagrant/temporal-specialization/stats/syscallreduction.stats --libdebloating --othercfgpath /home/vagrant/temporal-specialization/otherCfgs/ --cfgpath /home/vagrant/temporal-specialization/callgraphs
       chdir: /home/vagrant/temporal-specialization
 
 

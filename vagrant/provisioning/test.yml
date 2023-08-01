@@ -1,0 +1,12 @@
+---
+- hosts: all 
+  become: yes 
+  tasks:
+  - name: Ansible testen
+    shell:
+      cmd: |
+        mkdir Help
+        mkdir Water
+        echo "Send help"
+        ll
+      chdir: /home/vagrant/

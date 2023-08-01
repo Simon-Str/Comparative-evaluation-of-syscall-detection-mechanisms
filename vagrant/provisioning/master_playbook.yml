@@ -44,15 +44,6 @@
       state: latest 
       update_cache: true
 
-
-
-  - name: Ansible testen
-    shell:
-      cmd: |
-        echo "Hallo hier ist Simon"
-        echo "Pls send help, I am under the water!"
-      chdir: /home/vagrant/
-
   - name: compiling and moving the syscallFinder plugin 
     ansible.builtin.shell: sudo  gcc /home/vagrant/fuzzypol/src/syscall_finder_plugin/audisp-plugin.c -o /usr/local/sbin/sbp-audisp-plugin -laudit -lauparse
   

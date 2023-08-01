@@ -1,6 +1,7 @@
 ---
 - hosts: all 
   become: yes 
+  tasks:
   - name: installing package dependencies
     apt: 
       name: 
@@ -9,8 +10,8 @@
         - gperf
       state: latest
       update_cache: true
-  tasks: 
-  # Create according directory structure
+      
+  # coreutils for ls
   - name: Creating examples directory
     file:
       path: /home/vagrant/simon-examples
@@ -30,7 +31,7 @@
       
   - name: Configuring the Coreutils compiler
     shell:
-      cmd: ./configure
+      cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
       chdir: /home/vagrant/simon-examples/coreutils
       
   - name: Removing old make attempts
@@ -42,3 +43,13 @@
     shell:
       cmd: make -j$(nproc)
       chdir: /home/vagrant/simon-examples/coreutils
+      
+  - name: Copying Bitcodes to temporal-specialization/bitcodes
+    shell:
+      cmd: find . -name "*.0.5.precodegen.bc" -exec cp {} /home/vagrant/temporal-specialization/bitcodes \;
+      chdir: /home/vagrant/simon-examples/coreutils/src
+      
+  - name: Creating LS Bianry dir and copying binary
+    shell:
+      cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/ls ; cp ls /home/vagrant/temporal-specialization/binaries/ls
+      chdir: /home/vagrant/simon-examples/coreutils/src

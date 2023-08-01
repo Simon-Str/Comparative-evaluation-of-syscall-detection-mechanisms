@@ -38,7 +38,15 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: "sudo sed -i 's/allowed_users=.*$/allowed_users=anybody/' /etc/X11/Xwrapper.config"
   # Permit password authentication because broken vagrant publickey authentication
   config.vm.provision "shell", inline: "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; sudo systemctl restart sshd;", run: "always"
-
+  
+  config.vm.provision "Ansible Test", type: "ansible_local" do |ansible|
+    ansible.verbose = "vv" 
+    ansible.playbook = "test.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
+  
   config.vm.provision "ansible_local" do |ansible|
     ansible.verbose = "v" 
     ansible.playbook = "master_playbook.yml"
@@ -66,6 +74,22 @@ Vagrant.configure("2") do |config|
   config.vm.provision "Takes long: install_sysfilter_tempSpecial_chestnut", type: "ansible_local" do |ansible|
     ansible.verbose = "v" 
     ansible.playbook = "install_sysfilter_tempSpecial_chestnut.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
+  
+  config.vm.provision "Install Simon examples", type: "ansible_local" do |ansible|
+    ansible.verbose = "v" 
+    ansible.playbook = "compile_3_examples.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
+  
+  config.vm.provision "Analyze Simon examples", type: "ansible_local" do |ansible|
+    ansible.verbose = "v" 
+    ansible.playbook = "analyze_3_examples.yml"
     ansible.provisioning_path = "/vagrant/provisioning"
     ansible.inventory_path = "inventory"
     ansible.limit = "all"
