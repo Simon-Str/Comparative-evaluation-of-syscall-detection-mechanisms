@@ -48,8 +48,9 @@
 
   - name: Ansible testen
     shell:
-      cmd:  echo "Hallo hier ist Simon"
-      cmd:  echo "Pls send help, I am under the water!"
+      cmd: |
+        echo "Hallo hier ist Simon"
+        echo "Pls send help, I am under the water!"
       chdir: /home/vagrant/
 
   - name: compiling and moving the syscallFinder plugin 
