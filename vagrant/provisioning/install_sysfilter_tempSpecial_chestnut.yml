@@ -159,7 +159,7 @@
 
   - name: Binalyzer Install Pip requirements
     shell:
-      cmd:   pip3 install -r requirements.txt
+      cmd:  pip3 install -r requirements.txt
       chdir: /home/vagrant/chestnut/Binalyzer
 
   - name: Building Dynalyzer
