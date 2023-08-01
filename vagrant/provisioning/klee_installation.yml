@@ -50,66 +50,66 @@
     
   - name: Creating KLEE installation dir
     file:
-      path: /home/vagrant/klee_installation_dir
+      path: /home/vagrant/fuzzypol/klee_installation_dir
       state: directory
     
   - name: Download und unarchiving Google Test Suite
     ansible.builtin.unarchive:
       src: https://github.com/google/googletest/archive/release-1.11.0.zip
-      dest: /home/vagrant/klee_installation_dir
+      dest: /home/vagrant/fuzzypol/klee_installation_dir
       remote_src: yes
 
   - name: Cloning uClibc and POSIX environment model
     git:
       repo: https://github.com/klee/klee-uclibc.git
-      dest: /home/vagrant/klee_installation_dir/klee-uclibc
+      dest: /home/vagrant/fuzzypol/klee_installation_dir/klee-uclibc
       clone: yes
       update: yes
 
   - name: Configuring uClibc and POSIX environment model 
     shell: 
       cmd: ./configure --make-llvm-lib  --with-cc clang-13 --with-llvm-config llvm-config-13
-      chdir: /home/vagrant/klee_installation_dir/klee-uclibc
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee-uclibc
   
   - name: Building uClibc 
     shell: 
       cmd: make -j2
-      chdir: /home/vagrant/klee_installation_dir/klee-uclibc
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee-uclibc
 
 
   - name: Cloning KLEE
     git:
       repo: https://github.com/klee/klee.git
-      dest: /home/vagrant/klee_installation_dir/klee
+      dest: /home/vagrant/fuzzypol/klee_installation_dir/klee
       clone: yes
       update: yes
 
   - name: Creating libc++ build dir
     file:
-      path: /home/vagrant/klee_installation_dir/libcpp
+      path: /home/vagrant/fuzzypol/klee_installation_dir/libcpp
       state: directory
 
   - name: Building libc++ Version 13 
     shell: 
-      cmd: LLVM_VERSION=13 BASE=/home/vagrant/klee_installation_dir/libcpp ENABLE_OPTIMIZED=1 DISABLE_ASSERTIONS=1 ENABLE_DEBUG=0 REQUIRES_RTTI=1 /home/vagrant/klee_installation_dir/klee/scripts/build/build.sh libcxx
-      chdir: /home/vagrant/klee_installation_dir/klee
+      cmd: LLVM_VERSION=13 BASE=/home/vagrant/fuzzypol/klee_installation_dir/libcpp ENABLE_OPTIMIZED=1 DISABLE_ASSERTIONS=1 ENABLE_DEBUG=0 REQUIRES_RTTI=1 /home/vagrant/fuzzypol/klee_installation_dir/klee/scripts/build/build.sh libcxx
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee
 
   - name: Creating KLEE build dir
     file:
-      path: /home/vagrant/klee_installation_dir/klee/build
+      path: /home/vagrant/fuzzypol/klee_installation_dir/klee/build
       state: directory
 
   - name: Configuring KLEE 
     shell: 
-      cmd: cmake -DENABLE_SOLVER_STP=OFF -DENABLE_POSIX_RUNTIME=ON -DENABLE_KLEE_UCLIBC=ON -DKLEE_UCLIBC_PATH=/home/vagrant/klee_installation_dir/klee-uclibc/ -DENABLE_KLEE_LIBCXX=ON -DKLEE_LIBCXX_DIR=/home/vagrant/klee_installation_dir/libcpp/libc++-install-130/ -DKLEE_LIBCXX_INCLUDE_DIR=/home/vagrant/klee_installation_dir/libcpp/libc++-install-130/include/c++/v1/ -DENABLE_KLEE_EH_CXX=ON -DKLEE_LIBCXXABI_SRC_DIR=/home/vagrant/klee_installation_dir/libcpp/llvm-130/libcxxabi/ -DENABLE_UNIT_TESTS=ON -DGTEST_SRC_DIR=/home/vagrant/klee_installation_dir/googletest-release-1.11.0/ -DLLVM_CONFIG_BINARY=/usr/bin/llvm-config-13 -DLLVMCC=/bin/clang-13 -DLLVMCXX=/bin/clang++-13 /home/vagrant/klee_installation_dir/klee/
-      chdir: /home/vagrant/klee_installation_dir/klee/build
+      cmd: cmake -DENABLE_SOLVER_STP=OFF -DENABLE_POSIX_RUNTIME=ON -DENABLE_KLEE_UCLIBC=ON -DKLEE_UCLIBC_PATH=/home/vagrant/fuzzypol/klee_installation_dir/klee-uclibc/ -DENABLE_KLEE_LIBCXX=ON -DKLEE_LIBCXX_DIR=/home/vagrant/fuzzypol/klee_installation_dir/libcpp/libc++-install-130/ -DKLEE_LIBCXX_INCLUDE_DIR=/home/vagrant/fuzzypol/klee_installation_dir/libcpp/libc++-install-130/include/c++/v1/ -DENABLE_KLEE_EH_CXX=ON -DKLEE_LIBCXXABI_SRC_DIR=/home/vagrant/fuzzypol/klee_installation_dir/libcpp/llvm-130/libcxxabi/ -DENABLE_UNIT_TESTS=ON -DGTEST_SRC_DIR=/home/vagrant/fuzzypol/klee_installation_dir/googletest-release-1.11.0/ -DLLVM_CONFIG_BINARY=/usr/bin/llvm-config-13 -DLLVMCC=/bin/clang-13 -DLLVMCXX=/bin/clang++-13 /home/vagrant/fuzzypol/klee_installation_dir/klee/
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee/build
 
   - name: Building KLEE 
     shell: 
       cmd: make -j2
-      chdir: /home/vagrant/klee_installation_dir/klee/build
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee/build
   
   - name: Installing KLEE 
     shell: 
       cmd: make install
-      chdir: /home/vagrant/klee_installation_dir/klee/build
+      chdir: /home/vagrant/fuzzypol/klee_installation_dir/klee/build

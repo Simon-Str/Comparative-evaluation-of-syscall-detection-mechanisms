@@ -1,15 +1,16 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+ENV["LC_ALL"] = "de_DE.UTF-8"
+
 Vagrant.configure("2") do |config|
 
   config.vm.define "ubuntu_jammy_desktop"
   config.vm.box = "ubuntu/jammy64"
   #config.vm.network "private_network", :type => 'dhcp'
   config.vagrant.plugins = "vagrant-vbguest"
-  raise "vagrant-vbguest plugin must be installed" unless Vagrant.has_plugin? "vagrant-vbguest"
   config.vm.provider "virtualbox" do |vb|
-    vb.cpus = 6
+    vb.cpus = 2
     vb.gui = true
     vb.memory = "8192"
     vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
@@ -21,8 +22,8 @@ Vagrant.configure("2") do |config|
   end
   config.vm.synced_folder "vagrant" , "/vagrant", :mount_options => ["ro"]
   config.vm.synced_folder "synced_folder" , "/synced_folder/", type: "virtualbox", :mount_options => ['dmode=777','fmode=775'], automount: true
-  config.vm.provision "file", source: "src", destination: "/home/vagrant/"
-  config.vm.provision "file", source: "afl_custom_mutators", destination: "/home/vagrant/"
+  config.vm.provision "file", source: "src", destination: "/home/vagrant/fuzzypol/"
+  config.vm.provision "file", source: "afl_custom_mutators", destination: "/home/vagrant/fuzzypol/"
 
 
 
@@ -62,8 +63,8 @@ Vagrant.configure("2") do |config|
     ansible.limit = "all"
   end
   
-  config.vm.provision "install_sysfilter_tempSpecial_chestnut", type: "ansible_local" do |ansible|
-    ansible.verbose = "vvv" 
+  config.vm.provision "Takes long: install_sysfilter_tempSpecial_chestnut", type: "ansible_local" do |ansible|
+    ansible.verbose = "v" 
     ansible.playbook = "install_sysfilter_tempSpecial_chestnut.yml"
     ansible.provisioning_path = "/vagrant/provisioning"
     ansible.inventory_path = "inventory"

@@ -9,7 +9,7 @@
       update_cache: true
 
   #- name: change permission of KLEE installation script
-  #  file: dest=/home/vagrant/src/AFLandKLEEinstalldir/KLEE_install_30September21.sh mode=a+x 
+  #  file: dest=/home/vagrant/fuzzypol/src/AFLandKLEEinstalldir/KLEE_install_30September21.sh mode=a+x 
 
   - name: Installing AFL++
     apt:
@@ -18,17 +18,17 @@
       update_cache: true
       
   #- name: change permission of AFL installation script
-  #  file: dest=/home/vagrant/src/AFLandKLEEinstalldir/AFL_install_z1.sh mode=a+x 
+  #  file: dest=/home/vagrant/fuzzypol/src/AFLandKLEEinstalldir/AFL_install_z1.sh mode=a+x 
 
   #- name: executing KLEE installation script 
   #  shell: 
   #    cmd: ./KLEE_install_30September21.sh
-  #    chdir: /home/vagrant/src/AFLandKLEEinstalldir/
+  #    chdir: /home/vagrant/fuzzypol/src/AFLandKLEEinstalldir/
 
   #- name: executing AFL installation script 
   #  shell:
   #   cmd: ./AFL_install_z1.sh 
-  #   chdir: /home/vagrant/src/AFLandKLEEinstalldir/ 
+  #   chdir: /home/vagrant/fuzzypol/src/AFLandKLEEinstalldir/ 
 
   - name: installing lib-audit, lib-auparse and pyhton3-audit, cmake
     apt: 
@@ -44,18 +44,26 @@
       state: latest 
       update_cache: true
 
+
+
+  - name: Ansible testen
+    shell:
+      cmd:  echo "Hallo hier ist Simon"
+      cmd: echo "Pls send help, I am under the water!"
+      chdir: /home/vagrant/
+
   - name: compiling and moving the syscallFinder plugin 
-    ansible.builtin.shell: sudo  gcc /home/vagrant/src/syscall_finder_plugin/audisp-plugin.c -o /usr/local/sbin/sbp-audisp-plugin -laudit -lauparse
+    ansible.builtin.shell: sudo  gcc /home/vagrant/fuzzypol/src/syscall_finder_plugin/audisp-plugin.c -o /usr/local/sbin/sbp-audisp-plugin -laudit -lauparse
   
 
   - name: Executing CMake for File-Finder src 
-    ansible.builtin.shell: sudo cmake /home/vagrant/src/fileFinder -B /home/vagrant/src/fileFinder
+    ansible.builtin.shell: sudo cmake /home/vagrant/fuzzypol/src/fileFinder -B /home/vagrant/fuzzypol/src/fileFinder
 
   - name: Compiling File-Finder src 
-    ansible.builtin.shell: sudo make -C /home/vagrant/src/fileFinder
+    ansible.builtin.shell: sudo make -C /home/vagrant/fuzzypol/src/fileFinder
 
   - name: installing the file finder plugin 
-    ansible.builtin.shell: sudo python3 /home/vagrant/src/fileFinder/installConfigFile.py /home/vagrant/src/fileFinder/AudispPlugin
+    ansible.builtin.shell: sudo python3 /home/vagrant/fuzzypol/src/fileFinder/installConfigFile.py /home/vagrant/fuzzypol/src/fileFinder/AudispPlugin
 
   - name: Changing configuration of the file finder plugin 
     ansible.builtin.file: 
@@ -66,14 +74,14 @@
 
   # - name: Copying the Log Evaluation Tool
   #   ansible.builtin.copy:
-  #     src: /home/vagrant/src/fileFinder/LogEvaluation
-  #     dest: /home/vagrant/policy_generator_src/file_finder
+  #     src: /home/vagrant/fuzzypol/src/fileFinder/LogEvaluation
+  #     dest: /home/vagrant/fuzzypol/policy_generator_src/file_finder
   #     mode: '0755'
   #     remote_src: yes
 
 
   - name: moving config for syscall_finder 
-    ansible.builtin.shell: sudo cp /home/vagrant/src/syscall_finder_plugin/syscall_finder_config/sbp.conf /etc/audit/plugins.d/
+    ansible.builtin.shell: sudo cp /home/vagrant/fuzzypol/src/syscall_finder_plugin/syscall_finder_config/sbp.conf /etc/audit/plugins.d/
 
   - name: Setting config file permission accordingly
     file: /etc/audit/plugins.d/sbp.conf mode=g-w,o-r
@@ -96,22 +104,22 @@
 
   - name: Marking the fuzzing plugin as executable
     ansible.builtin.file: 
-      path: /home/vagrant/src/audisp_plugins/fuzzing_plugin.py
+      path: /home/vagrant/fuzzypol/src/audisp_plugins/fuzzing_plugin.py
       owner: root 
       group: root 
       mode: '0755'
   - name: moving plugin for fuzzing
-    ansible.builtin.shell: sudo cp /home/vagrant/src/audisp_plugins/fuzzing_plugin.py /usr/local/sbin/fuzzing_plugin.py
+    ansible.builtin.shell: sudo cp /home/vagrant/fuzzypol/src/audisp_plugins/fuzzing_plugin.py /usr/local/sbin/fuzzing_plugin.py
 
   - name: Marking the seccomp plugin as executable
     ansible.builtin.file: 
-      path: /home/vagrant/src/audisp_plugins/syscall_logger.py 
+      path: /home/vagrant/fuzzypol/src/audisp_plugins/syscall_logger.py 
       owner: root 
       group: root 
       mode: '0755'
 
   - name: moving plugin for seccomp filtering 
-    ansible.builtin.shell:  sudo cp /home/vagrant/src/audisp_plugins/syscall_logger.py  /usr/local/sbin/syscall_logger.py
+    ansible.builtin.shell:  sudo cp /home/vagrant/fuzzypol/src/audisp_plugins/syscall_logger.py  /usr/local/sbin/syscall_logger.py
 
   - name: Create Fuzzing Output Dir
     file:
@@ -148,9 +156,9 @@
     ansible.builtin.shell: echo core >/proc/sys/kernel/core_pattern
   
   - name: Change permission of GLIBC installation script
-    file: dest=/home/vagrant/src/customGLIBC/custom_glibc_install.sh mode=a+x 
+    file: dest=/home/vagrant/fuzzypol/src/customGLIBC/custom_glibc_install.sh mode=a+x 
   
   - name: executing GLIBC installation script 
     shell: 
       cmd: ./custom_glibc_install.sh
-      chdir: /home/vagrant/src/customGLIBC
+      chdir: /home/vagrant/fuzzypol/src/customGLIBC

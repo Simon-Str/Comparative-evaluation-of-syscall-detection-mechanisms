@@ -1,0 +1,44 @@
+---
+- hosts: all 
+  become: yes 
+  - name: installing package dependencies
+    apt: 
+      name: 
+        - autoconf
+        - autopoint
+        - gperf
+      state: latest
+      update_cache: true
+  tasks: 
+  # Create according directory structure
+  - name: Creating examples directory
+    file:
+      path: /home/vagrant/simon-examples
+      state: directory
+      
+  - name: Cloning GNU coreutils
+    git:
+      repo: git://git.sv.gnu.org/coreutils
+      dest: /home/vagrant/simon-examples
+      clone: yes
+      update: yes
+      
+  - name: Configuring Coreutils and grabbing submodules
+    shell:
+      cmd: ./bootstrap
+      chdir: /home/vagrant/simon-examples/coreutils
+      
+  - name: Configuring the Coreutils compiler
+    shell:
+      cmd: ./configure
+      chdir: /home/vagrant/simon-examples/coreutils
+      
+  - name: Removing old make attempts
+    shell:
+      cmd: make clean
+      chdir: /home/vagrant/simon-examples/coreutils
+      
+  - name: Compiling using max threads
+    shell:
+      cmd: make -j$(nproc)
+      chdir: /home/vagrant/simon-examples/coreutils

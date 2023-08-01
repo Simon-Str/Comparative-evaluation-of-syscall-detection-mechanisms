@@ -9,88 +9,88 @@
   # Create according directory structure
   - name: Creating test file directory
     file:
-      path: /home/vagrant/examples/
+      path: /home/vagrant/fuzzypol/examples/
       state: directory
   
   - name: Creating normal bin directory
     file:
-      path: /home/vagrant/examples/normal_bin
+      path: /home/vagrant/fuzzypol/examples/normal_bin
       state: directory
     
   - name: Creating AFL bin directory
     file:
-      path: /home/vagrant/examples/afl_instructed
+      path: /home/vagrant/fuzzypol/examples/afl_instructed
       state: directory
   
   - name: Creating KLEE bit code directory
     file:
-      path: /home/vagrant/examples/klee_instructed
+      path: /home/vagrant/fuzzypol/examples/klee_instructed
       state: directory
 
   - name: Creating directory for source files
     file:
-      path: /home/vagrant/examples/src
+      path: /home/vagrant/fuzzypol/examples/src
       state: directory
   
   - name: Download und unarchive Diffutils-3.8
     ansible.builtin.unarchive:
       src: https://ftp.gnu.org/gnu/diffutils/diffutils-3.8.tar.xz
-      dest: /home/vagrant/examples/src
+      dest: /home/vagrant/fuzzypol/examples/src
       remote_src: yes
 
   - name: Creating Diffutils Compilation Dir - KLEE
     file:
-      path: /home/vagrant/examples/src/diffutils-3.8/klee_src/
+      path: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/
       state: directory
 
 
   - name: Creating Diffutils Compilation Dir - AFL changed GLIBC 
     file:
-      path: /home/vagrant/examples/src/diffutils-3.8/afl_changed_glibc/
+      path: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/afl_changed_glibc/
       state: directory
 
   - name: Configuring Diffutils 
     ansible.builtin.shell: CC=wllvm ../configure --disable-nls CFLAGS="-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"
     args:
-      chdir: /home/vagrant/examples/src/diffutils-3.8/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/
   
   - name: Building Diffutils
     ansible.builtin.shell: make
     args:
-      chdir: /home/vagrant/examples/src/diffutils-3.8/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/
   
   - name: Extracting KLEE Bitcode - Difutils 
     ansible.builtin.shell: extract-bc -l llvm-link-13 ./diff
     args:
-      chdir: /home/vagrant/examples/src/diffutils-3.8/klee_src/src
+      chdir: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/src
   
   - name: Copying diff - normal bin
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/diffutils-3.8/klee_src/src/diff
-      dest: /home/vagrant/examples/normal_bin
+      src: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/src/diff
+      dest: /home/vagrant/fuzzypol/examples/normal_bin
       mode: '0755'
       remote_src: yes
 
   - name: Copying diff - KLEE bit code
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/diffutils-3.8/klee_src/src/diff.bc
-      dest: /home/vagrant/examples/klee_instructed
+      src: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/klee_src/src/diff.bc
+      dest: /home/vagrant/fuzzypol/examples/klee_instructed
       remote_src: yes
 
   - name: Configuring DIFF for AFL with changed GLIBC 
     shell: 
       cmd: CC=afl-gcc FORCE_UNSAFE_CONFIGURE=1 CFLAGS='-L/home/vagrant/src/customGLIBC/glibc/build/install/lib -I /home/vagrant/src/customGLIBC/glibc/build/install/include/ -Wl,--rpath=/home/vagrant/src/customGLIBC/glibc/build/install/lib'  ../configure
-      chdir: /home/vagrant/examples/src/diffutils-3.8/afl_changed_glibc/
+      chdir: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/afl_changed_glibc/
 
   - name: Building File for AFL with changed GLIBC 
     shell: 
       cmd: make -j2
-      chdir: /home/vagrant/examples/src/diffutils-3.8/afl_changed_glibc/
+      chdir: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/afl_changed_glibc/
   
   - name: Copying File - AFL with changed glibc bin
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/diffutils-3.8/afl_changed_glibc/src/diff
-      dest: /home/vagrant/examples/afl_instructed 
+      src: /home/vagrant/fuzzypol/examples/src/diffutils-3.8/afl_changed_glibc/src/diff
+      dest: /home/vagrant/fuzzypol/examples/afl_instructed 
       mode: '0755'
       remote_src: yes
 
@@ -99,60 +99,60 @@
   - name: Download und unarchive Fileutils-5.39
     ansible.builtin.unarchive:
       src: http://ftp.astron.com/pub/file/file-5.39.tar.gz
-      dest: /home/vagrant/examples/src
+      dest: /home/vagrant/fuzzypol/examples/src
       remote_src: yes
   - name: Creating file Compilation Dir - KLEE
     file:
-      path: /home/vagrant/examples/src/file-5.39/klee_src/
+      path: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/
       state: directory
 
   - name: Creating file Compilation Dir - AFL with changed GLIBC 
     file:
-      path: /home/vagrant/examples/src/file-5.39/afl_changed_glibc/
+      path: /home/vagrant/fuzzypol/examples/src/file-5.39/afl_changed_glibc/
       state: directory
 
   - name: Configuring Fileutils 
     ansible.builtin.shell: CC=wllvm ../configure --disable-nls CFLAGS="-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"
     args:
-      chdir: /home/vagrant/examples/src/file-5.39/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/
   
   - name: Building Fileutils 
     ansible.builtin.shell: make
     args:
-      chdir: /home/vagrant/examples/src/file-5.39/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/
 
   - name: Extracting KLEE Bitcode - File
     ansible.builtin.shell: extract-bc -l llvm-link-13 ./file
     args:
-      chdir: /home/vagrant/examples/src/file-5.39/klee_src/src/.libs
+      chdir: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/src/.libs
   
   - name: Copying file - normal bin
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/file-5.39/klee_src/src/.libs/file
-      dest: /home/vagrant/examples/normal_bin
+      src: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/src/.libs/file
+      dest: /home/vagrant/fuzzypol/examples/normal_bin
       mode: '0755'
       remote_src: yes
 
   - name: Copying file - KLEE bit code
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/file-5.39/klee_src/src/.libs/file.bc
-      dest: /home/vagrant/examples/klee_instructed
+      src: /home/vagrant/fuzzypol/examples/src/file-5.39/klee_src/src/.libs/file.bc
+      dest: /home/vagrant/fuzzypol/examples/klee_instructed
       remote_src: yes
 
   - name: Configuring File for AFL with changed GLIBC 
     shell: 
       cmd: CC=afl-gcc FORCE_UNSAFE_CONFIGURE=1 CFLAGS='-L/home/vagrant/src/customGLIBC/glibc/build/install/lib -I /home/vagrant/src/customGLIBC/glibc/build/install/include/ -Wl,--rpath=/home/vagrant/src/customGLIBC/glibc/build/install/lib'  ../configure
-      chdir: /home/vagrant/examples/src/file-5.39/afl_changed_glibc/
+      chdir: /home/vagrant/fuzzypol/examples/src/file-5.39/afl_changed_glibc/
 
   - name: Building File for afl with changed GLIBC 
     shell: 
       cmd: make
-      chdir: /home/vagrant/examples/src/file-5.39/afl_changed_glibc/
+      chdir: /home/vagrant/fuzzypol/examples/src/file-5.39/afl_changed_glibc/
   
   - name: Copying File - AFL with changed glibc bin
     ansible.builtin.copy:
-      src: /home/vagrant/examples/src/file-5.39/afl_changed_glibc/src/.libs/file
-      dest: /home/vagrant/examples/afl_instructed 
+      src: /home/vagrant/fuzzypol/examples/src/file-5.39/afl_changed_glibc/src/.libs/file
+      dest: /home/vagrant/fuzzypol/examples/afl_instructed 
       mode: '0755'
       remote_src: yes
 
@@ -160,58 +160,58 @@
   - name: Download und unarchive Coreutils-9.0
     ansible.builtin.unarchive:
       src: https://ftp.gnu.org/gnu/coreutils/coreutils-9.0.tar.xz
-      dest: /home/vagrant/examples/src
+      dest: /home/vagrant/fuzzypol/examples/src
       remote_src: yes
 
   - name: Creating Coreutils Compilation Dir - KLEE
     file:
-      path: /home/vagrant/examples/src/coreutils-9.0/klee_src/
+      path: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/
       state: directory
 
   - name: Creating Coreutils Compilation Dir - AFL Changed LIBC
     file:
-      path: /home/vagrant/examples/src/coreutils-9.0/afl_changed_libc/
+      path: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/afl_changed_libc/
       state: directory
 
   - name: Configuring Coreutils 
     ansible.builtin.shell: CC=wllvm FORCE_UNSAFE_CONFIGURE=1 ../configure --disable-nls CFLAGS="-g -O1 -Xclang -disable-llvm-passes -D__NO_STRING_INLINES  -D_FORTIFY_SOURCE=0 -U__OPTIMIZE__"  
     args:
-      chdir: /home/vagrant/examples/src/coreutils-9.0/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/
   
   - name: Building Coreutils 
     ansible.builtin.shell: make
     args:
-      chdir: /home/vagrant/examples/src/coreutils-9.0/klee_src/
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/
 
   - name: Extracting KLEE Bitcode - Coreutils
     ansible.builtin.shell: find . -executable -type f | xargs -I '{}' extract-bc -l llvm-link-13 '{}'
     args:
-      chdir: /home/vagrant/examples/src/coreutils-9.0/klee_src/src/
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/src/
 
   - name: Copying Coreutils - normal bin 
     shell: 
-      cmd: find . -maxdepth 1 -executable -type f -exec test -x {} \; -exec cp {} /home/vagrant/examples/normal_bin \;
-      chdir: /home/vagrant/examples/src/coreutils-9.0/klee_src/src
+      cmd: find . -maxdepth 1 -executable -type f -exec test -x {} \; -exec cp {} /home/vagrant/fuzzypol/examples/normal_bin \;
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/src
 
   - name: Copying Coreutils - KLEE bit code 
     shell: 
-      cmd: cp /home/vagrant/examples/src/coreutils-9.0/klee_src/src/*.bc  /home/vagrant/examples/klee_instructed
-      chdir: /home/vagrant/examples/klee_instructed
+      cmd: cp /home/vagrant/fuzzypol/examples/src/coreutils-9.0/klee_src/src/*.bc  /home/vagrant/fuzzypol/examples/klee_instructed
+      chdir: /home/vagrant/fuzzypol/examples/klee_instructed
       
   - name: Configuring Coreutils for AFL with changed GLIBC 
     shell: 
       cmd: CC=afl-gcc FORCE_UNSAFE_CONFIGURE=1 CFLAGS='-L/home/vagrant/src/customGLIBC/glibc/build/install/lib -I /home/vagrant/src/customGLIBC/glibc/build/install/include/ -Wl,--rpath=/home/vagrant/src/customGLIBC/glibc/build/install/lib -Wl,--rpath=/lib/x86_64-linux-gnu'  ../configure
-      chdir: /home/vagrant/examples/src/coreutils-9.0/afl_changed_libc/
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/afl_changed_libc/
 
   - name: Building Coreutils for afl with changed GLIBC 
     shell: 
       cmd: make
-      chdir: /home/vagrant/examples/src/coreutils-9.0/afl_changed_libc/
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/afl_changed_libc/
   
   - name: Copying Coreutils - afl bin with changed GLIBC 
     shell: 
-      cmd: find . -maxdepth 1 -executable -type f -exec test -x {} \; -exec cp {} /home/vagrant/examples/afl_instructed \;
-      chdir: /home/vagrant/examples/src/coreutils-9.0/afl_changed_libc/src
+      cmd: find . -maxdepth 1 -executable -type f -exec test -x {} \; -exec cp {} /home/vagrant/fuzzypol/examples/afl_instructed \;
+      chdir: /home/vagrant/fuzzypol/examples/src/coreutils-9.0/afl_changed_libc/src
 
   
   
