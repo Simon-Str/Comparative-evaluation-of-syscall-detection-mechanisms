@@ -51,5 +51,7 @@
       
   - name: Creating LS Bianry dir and copying binary
     shell:
-      cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/ls ; cp ls /home/vagrant/temporal-specialization/binaries/ls
+      cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/ls ; cp ls /home/vagrant/temporal-specialization/binaries/ls/
       chdir: /home/vagrant/simon-examples/coreutils/src
+      
+      #modifiy app.to.properties.json 

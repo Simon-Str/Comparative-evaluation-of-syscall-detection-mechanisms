@@ -8,5 +8,4 @@
         mkdir Help
         mkdir Water
         echo "Send help"
-        ll
       chdir: /home/vagrant/
