@@ -107,7 +107,7 @@
   - name: Building Binutils
     shell:
       cmd:  mkdir build; cd build; ../binutils/configure --enable-gold --enable-plugins --disable-werror; make all-gold
-      chdir: /home/vagrant/temporal-specialization/binutils
+      chdir: /home/vagrant/temporal-specialization/
 
 
   - name: Extracting LLVM-7
