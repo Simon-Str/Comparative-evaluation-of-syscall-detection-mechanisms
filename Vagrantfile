@@ -39,13 +39,13 @@ Vagrant.configure("2") do |config|
   # Permit password authentication because broken vagrant publickey authentication
   config.vm.provision "shell", inline: "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; sudo systemctl restart sshd;", run: "always"
   
-  config.vm.provision "Ansible Test", type: "ansible_local" do |ansible|
-    ansible.verbose = "vv" 
-    ansible.playbook = "test.yml"
-    ansible.provisioning_path = "/vagrant/provisioning"
-    ansible.inventory_path = "inventory"
-    ansible.limit = "all"
-  end
+  # config.vm.provision "Ansible Test", type: "ansible_local" do |ansible|
+    # ansible.verbose = "vv" 
+    # ansible.playbook = "test.yml"
+    # ansible.provisioning_path = "/vagrant/provisioning"
+    # ansible.inventory_path = "inventory"
+    # ansible.limit = "all"
+  # end
   
   config.vm.provision "ansible_local" do |ansible|
     ansible.verbose = "v" 
