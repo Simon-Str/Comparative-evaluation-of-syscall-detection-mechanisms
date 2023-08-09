@@ -88,6 +88,14 @@
       dest: /home/vagrant/temporal-specialization/
       mode: '0755'
       remote_src: yes
+      
+  - name: Copy syscall.out parse script
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/parse-out-temporal-specialization.py
+      dest: /home/vagrant/temporal-specialization/
+      mode: '0755'
+      remote_src: yes     
+      
 
   - name: Load Submodules
     shell:
@@ -115,7 +123,7 @@
       cmd:  mkdir build; cd build; cmake -G "Unix Makefiles" -DLLVM_BINUTILS_INCDIR=/path/to/binutils/include -DLLVM_TARGETS_TO_BUILD="X86" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install ../
       chdir: /home/vagrant/temporal-specialization/llvm-7.0.0.src
 
-  - name: Configuring LLVM-7
+  - name: Building LLVM-7
     shell:
       cmd:  make -j$(nproc) && make install
       chdir: /home/vagrant/temporal-specialization/llvm-7.0.0.src/build
@@ -128,8 +136,19 @@
   - name: Configuring Call-graph extraction
     shell:
       cmd:  export SVF_HOME=/home/vagrant/temporal-specialization/SVF/; export PATH=$SVF_HOME/Release-build/bin:$PATH
-      chdir: /home/vagrant/temporal-specialization/
+      chdir: /home/vagrant/temporal-specialization
+      
+ - name: Download und unarchive vanilla SVF 1.7
+    ansible.builtin.unarchive:
+      src: https://github.com/SVF-tools/SVF/archive/refs/tags/SVF-1.7.tar.gz
+      dest: /home/vagrant/temporal-specialization/
+      remote_src: yes
 
+  - name: Building SVF-1.7
+    shell:
+      cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
+      chdir: /home/vagrant/temporal-specialization/SVF-SVF-1.7
+      
   # - name: Extract Call-graph from httpd example
     # shell:
       # cmd: |
@@ -173,5 +192,9 @@
 
   - name: Building Sourcealyzer
     shell:
-      cmd:  ./download-and-build-fix.sh
+    
+      cmd: |
+       echo -e "\033[0;31mThis may take 2 hours, progress cannot be shown by ansible...\033[0m"
+       echo -e "\033[0;31mAlternative: You can interrupt ansible and run it manually. \033[0m"
+       ./download-and-build-fix.sh
       chdir: /home/vagrant/chestnut/Sourcealyzer/
