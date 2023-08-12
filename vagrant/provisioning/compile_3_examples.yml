@@ -20,16 +20,22 @@
   - name: Cloning GNU coreutils
     git:
       repo: git://git.sv.gnu.org/coreutils
-      dest: /home/vagrant/simon-examples
+      dest: /home/vagrant/simon-examples/coreutils
       clone: yes
-      update: yes
+      update: yess
       
   - name: Configuring Coreutils and grabbing submodules
     shell:
       cmd: ./bootstrap
       chdir: /home/vagrant/simon-examples/coreutils
+
+  - name: Setting up PATH
+    shell:
+      cmd: export LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin; export PATH=$LLVM_DIR/:$PATH
+      chdir: /home/vagrant/simon-examples/coreutils
+
       
-  - name: Configuring the Coreutils compiler
+  - name: Configuring the Coreutils compiler for tempSpec
     shell:
       cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
       chdir: /home/vagrant/simon-examples/coreutils

@@ -18,6 +18,7 @@
         - libmpc-dev
         - texinfo
         - binutils-dev
+        - jq
 
       state: latest
       update_cache: true
@@ -77,11 +78,6 @@
       cmd:   cp sysfilter_extract /usr/bin/
       chdir: /home/vagrant/sysfilter/extraction/app
 
-  - name: Creating Result dir for Temporal-Specialization
-    file:
-      path: /home/vagrant/temporal-specialization/results
-      state: directory
-
   - name: Copy Run Command Script
     ansible.builtin.copy:
       src: /vagrant/provisioning/run_command.sh
@@ -127,10 +123,11 @@
     shell:
       cmd:  make -j$(nproc) && make install
       chdir: /home/vagrant/temporal-specialization/llvm-7.0.0.src/build
-
+      
+      
   - name: Building SVF
     shell:
-      cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
+      cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
       chdir: /home/vagrant/temporal-specialization/SVF
 
   - name: Configuring Call-graph extraction
