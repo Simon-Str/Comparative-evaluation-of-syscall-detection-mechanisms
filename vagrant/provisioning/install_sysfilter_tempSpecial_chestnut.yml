@@ -18,7 +18,6 @@
         - libmpc-dev
         - texinfo
         - binutils-dev
-        - jq
 
       state: latest
       update_cache: true
@@ -90,7 +89,14 @@
       src: /vagrant/provisioning/parse-out-temporal-specialization.py
       dest: /home/vagrant/temporal-specialization/
       mode: '0755'
-      remote_src: yes     
+      remote_src: yes 
+
+  - name: Copy app.to.properties.json change script
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/change_appToProperties.py
+      dest: /home/vagrant/temporal-specialization/
+      mode: '0755'
+      remote_src: yes      
       
 
   - name: Load Submodules
@@ -146,52 +152,29 @@
       cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
       chdir: /home/vagrant/temporal-specialization/SVF-SVF-1.7
       
-  # - name: Extract Call-graph from httpd example
+
+  # - name: Binalyzer Install Pip requirements
     # shell:
-      # cmd: |
-        # wpa -print-fp -ander -dump-callgraph /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc
-        # python3 convertSvfCfgToHumanReadable.py callgraph_final.dot > /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.type.cfg
-        # spa -condition-cfg /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg
-        # spa -simple /home/vagrant/temporal-specialization/bitcodes/httpd.apr.bc 2>&1 | tee /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg
-      # chdir: /home/vagrant/temporal-specialization/
+      # cmd:  pip3 install -r requirements.txt
+      # chdir: /home/vagrant/chestnut/Binalyzer
 
-
-  # - name: Call Function Pointer Target Pruning
+  # - name: Building Dynalyzer
     # shell:
-      # cmd:  python3 /home/vagrant/temporal-specialization/python-utils/graphCleaner.py --fpanalysis --funcname main --output /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.new.type.fp.wglobal.cfg --directgraphfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.conditional.direct.calls.cfg --funcpointerfile /home/vagrant/temporal-specialization/callgraphs/httpd.apr.svf.function.pointer.allocations.wglobal.cfg -c /home/vagrant/temporal-specializationcallgraphs/httpd.apr.svf.type.cfg
-      # chdir: /home/vagrant/temporal-specialization/
+      # cmd:  make -j$(nproc)
+      # chdir: /home/vagrant/chestnut/Dynalyzer
 
+  # - name: Copy Fix for Build Script
+    # ansible.builtin.copy:
+      # src: /vagrant/provisioning/download-and-build-fix.sh
+      # dest: /home/vagrant/chestnut/Sourcealyzer/
+      # mode: '0755'
+      # remote_src: yes
 
-  # - name: Create Syscall Stats
+  # - name: Building Sourcealyzer
     # shell:
-      # cmd: |
-        # mkdir -p outputs; mkdir -p stats
-        # python3 /home/vagrant/temporal-specialization/createSyscallStats.py -c /home/vagrant/temporal-specialization/callgraphs/glibc.callgraph --apptopropertymap /home/vagrant/temporal-specialization/app.to.properties.json --binpath /home/vagrant/temporal-specialization/binaries --outputpath /home/vagrant/temporal-specialization/outputs/ --apptolibmap /home/vagrant/temporal-specialization/app.to.lib.map.json --sensitivesyscalls /home/vagrant/temporal-specialization/sensitive.syscalls --sensitivestatspath /home/vagrant/temporal-specialization/stats/sensitive.stats --syscallreductionpath /home/vagrant/temporal-specialization/stats/syscallreduction.stats --libdebloating --othercfgpath /home/vagrant/temporal-specialization/otherCfgs/ --cfgpath /home/vagrant/temporal-specialization/callgraphs
-      # chdir: /home/vagrant/temporal-specialization
-
-
-  - name: Binalyzer Install Pip requirements
-    shell:
-      cmd:  pip3 install -r requirements.txt
-      chdir: /home/vagrant/chestnut/Binalyzer
-
-  - name: Building Dynalyzer
-    shell:
-      cmd:  make -j$(nproc)
-      chdir: /home/vagrant/chestnut/Dynalyzer
-
-  - name: Copy Fix for Build Script
-    ansible.builtin.copy:
-      src: /vagrant/provisioning/download-and-build-fix.sh
-      dest: /home/vagrant/chestnut/Sourcealyzer/
-      mode: '0755'
-      remote_src: yes
-
-  - name: Building Sourcealyzer
-    shell:
     
-      cmd: |
-       echo -e "\033[0;31mThis may take 2 hours, progress cannot be shown by ansible...\033[0m"
-       echo -e "\033[0;31mAlternative: You can interrupt ansible and run it manually. \033[0m"
-       ./download-and-build-fix.sh
-      chdir: /home/vagrant/chestnut/Sourcealyzer/
+      # cmd: |
+       # echo -e "\033[0;31mThis may take 2 hours, progress cannot be shown by ansible...\033[0m"
+       # echo -e "\033[0;31mAlternative: You can interrupt ansible and run it manually. \033[0m"
+       # ./download-and-build-fix.sh
+      # chdir: /home/vagrant/chestnut/Sourcealyzer/
