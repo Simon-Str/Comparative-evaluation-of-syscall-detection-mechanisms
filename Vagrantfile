@@ -47,29 +47,29 @@ Vagrant.configure("2") do |config|
     # ansible.limit = "all"
   # end
   
-  config.vm.provision "ansible_local" do |ansible|
-    ansible.verbose = "v" 
-    ansible.playbook = "master_playbook.yml"
-    ansible.provisioning_path = "/vagrant/provisioning"
-    ansible.inventory_path = "inventory"
-    ansible.limit = "all"
-  end
+  # config.vm.provision "ansible_local" do |ansible|
+    # ansible.verbose = "v" 
+    # ansible.playbook = "master_playbook.yml"
+    # ansible.provisioning_path = "/vagrant/provisioning"
+    # ansible.inventory_path = "inventory"
+    # ansible.limit = "all"
+  # end
 
-  config.vm.provision "install_klee", type: "ansible_local" do |ansible|
-    ansible.verbose = "v" 
-    ansible.playbook = "klee_installation.yml"
-    ansible.provisioning_path = "/vagrant/provisioning"
-    ansible.inventory_path = "inventory"
-    ansible.limit = "all"
-  end
+  # config.vm.provision "install_klee", type: "ansible_local" do |ansible|
+    # ansible.verbose = "v" 
+    # ansible.playbook = "klee_installation.yml"
+    # ansible.provisioning_path = "/vagrant/provisioning"
+    # ansible.inventory_path = "inventory"
+    # ansible.limit = "all"
+  # end
 
-  config.vm.provision "install_examples", type: "ansible_local" do |ansible|
-    ansible.verbose = "v" 
-    ansible.playbook = "install_examples.yml"
-    ansible.provisioning_path = "/vagrant/provisioning"
-    ansible.inventory_path = "inventory"
-    ansible.limit = "all"
-  end
+  # config.vm.provision "install_examples", type: "ansible_local" do |ansible|
+    # ansible.verbose = "v" 
+    # ansible.playbook = "install_examples.yml"
+    # ansible.provisioning_path = "/vagrant/provisioning"
+    # ansible.inventory_path = "inventory"
+    # ansible.limit = "all"
+  # end
   
   config.vm.provision "Takes long: install_sysfilter_tempSpecial_chestnut", type: "ansible_local" do |ansible|
     ansible.verbose = "v" 

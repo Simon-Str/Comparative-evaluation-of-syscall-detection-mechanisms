@@ -1,11 +1,11 @@
 #!/bin/bash
 BASEDIR=$(pwd)
 RED='\033[0;31m'
-CYAN='\033[0;36m' 
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo "Working directory: $BASEDIR"
-echo -e "${CYAN}Keep in mind that you need to modifiy the app.to.properties.json${NC}"
+#echo -e "${CYAN}Keep in mind that you need to modifiy the app.to.properties.json${NC}"
 # e.g. ls.0.5.precodegen.bc
 if [ $# -eq 0 ]
   then echo -e "${RED}Provide a binary name and optional the bitcode extension like '.0.5.precodegen.bc'${NC}"

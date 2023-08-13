@@ -77,9 +77,9 @@
       cmd:   cp sysfilter_extract /usr/bin/
       chdir: /home/vagrant/sysfilter/extraction/app
 
-  - name: Copy Run Command Script
+  - name: Copy Analyze Binary Script
     ansible.builtin.copy:
-      src: /vagrant/provisioning/run_command.sh
+      src: /vagrant/provisioning/analyze_binary.sh
       dest: /home/vagrant/temporal-specialization/
       mode: '0755'
       remote_src: yes
@@ -96,7 +96,14 @@
       src: /vagrant/provisioning/change_appToProperties.py
       dest: /home/vagrant/temporal-specialization/
       mode: '0755'
-      remote_src: yes      
+      remote_src: yes
+
+  - name: Copy copy_results script
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/copy_results.sh
+      dest: /home/vagrant/temporal-specialization/
+      mode: '0755'
+      remote_src: yes          
       
 
   - name: Load Submodules

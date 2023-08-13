@@ -14,50 +14,103 @@
   # coreutils for ls
   - name: Creating examples directory
     file:
-      path: /home/vagrant/simon-examples
+      path: /home/vagrant/testbench
       state: directory
       
   - name: Cloning GNU coreutils
     git:
       repo: git://git.sv.gnu.org/coreutils
-      dest: /home/vagrant/simon-examples/coreutils
+      dest: /home/vagrant/testbench/coreutils
       clone: yes
-      update: yess
+      update: yes
       
   - name: Configuring Coreutils and grabbing submodules
     shell:
       cmd: ./bootstrap
-      chdir: /home/vagrant/simon-examples/coreutils
+      chdir: /home/vagrant/testbench/coreutils
 
+# this step need to be done in every terminal if you want to compile anything for tempSpec. 
   - name: Setting up PATH
     shell:
       cmd: export LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin; export PATH=$LLVM_DIR/:$PATH
-      chdir: /home/vagrant/simon-examples/coreutils
-
+      chdir: /home/vagrant/testbench/coreutils
       
   - name: Configuring the Coreutils compiler for tempSpec
     shell:
       cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
-      chdir: /home/vagrant/simon-examples/coreutils
+      chdir: /home/vagrant/testbench/coreutils
       
   - name: Removing old make attempts
     shell:
       cmd: make clean
-      chdir: /home/vagrant/simon-examples/coreutils
+      chdir: /home/vagrant/testbench/coreutils
       
   - name: Compiling using max threads
     shell:
       cmd: make -j$(nproc)
-      chdir: /home/vagrant/simon-examples/coreutils
+      chdir: /home/vagrant/testbench/coreutils
       
   - name: Copying Bitcodes to temporal-specialization/bitcodes
     shell:
       cmd: find . -name "*.0.5.precodegen.bc" -exec cp {} /home/vagrant/temporal-specialization/bitcodes \;
-      chdir: /home/vagrant/simon-examples/coreutils/src
+      chdir: /home/vagrant/testbench/coreutils/src
       
-  - name: Creating LS Bianry dir and copying binary
+  - name: Creating ls binary dir and copying binary
     shell:
       cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/ls ; cp ls /home/vagrant/temporal-specialization/binaries/ls/
-      chdir: /home/vagrant/simon-examples/coreutils/src
+      chdir: /home/vagrant/testbench/coreutils/src
+
+#diffutils for diff
+  - name: Download und unarchive Diffutils-3.8
+    ansible.builtin.unarchive:
+      src: https://ftp.gnu.org/gnu/diffutils/diffutils-3.8.tar.xz
+      dest: /home/vagrant/testbench/
+      remote_src: yes
       
-      #modifiy app.to.properties.json 
+  - name: Configuring Diffutils 
+    shell:
+      cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
+      chdir: /home/vagrant/testbench/diffutils-3.8
+
+
+  - name: Compiling Diffutils
+    shell:
+      cmd: make -j$(nproc)
+      chdir: /home/vagrant/testbench/diffutils-3.8
+
+  - name: Copying Bitcodes to temporal-specialization/bitcodes
+    shell:
+      cmd: find . -name "*.0.5.precodegen.bc" -exec cp {} /home/vagrant/temporal-specialization/bitcodes \;
+      chdir: /home/vagrant/testbench/diffutils-3.8/src
+      
+  - name: Creating diff binary dir and copying binary
+    shell:
+      cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/diff ; cp diff /home/vagrant/temporal-specialization/binaries/diff/
+      chdir: /home/vagrant/testbench/diffutils-3.8/src
+      
+#fileutils for file
+  - name: Download und unarchive Fileutils-5.39
+    ansible.builtin.unarchive:
+      src: http://ftp.astron.com/pub/file/file-5.39.tar.gz
+      dest: /home/vagrant/testbench/
+      remote_src: yes
+      
+  - name: Configuring Fileutils 
+    shell:
+      cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
+      chdir: /home/vagrant/testbench/file-5.39
+
+  - name: Compiling Fileutils
+    shell:
+      cmd: make -j$(nproc)
+      chdir: /home/vagrant/testbench/file-5.39
+
+  - name: Copying Bitcodes to temporal-specialization/bitcodes
+    shell:
+      cmd: find . -name "*.0.5.precodegen.bc" -exec cp {} /home/vagrant/temporal-specialization/bitcodes \;
+      chdir: /home/vagrant/testbench/file-5.39/src
+      
+  - name: Creating file binary dir and copying binary
+    shell:
+      cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/file ; cp file /home/vagrant/temporal-specialization/binaries/file/
+      chdir: /home/vagrant/testbench/file-5.39/src
