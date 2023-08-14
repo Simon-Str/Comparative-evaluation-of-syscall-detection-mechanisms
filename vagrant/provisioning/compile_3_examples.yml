@@ -29,12 +29,12 @@
       cmd: ./bootstrap
       chdir: /home/vagrant/testbench/coreutils
 
-# this step need to be done in every terminal if you want to compile anything for tempSpec. 
-  - name: Setting up PATH
-    shell:
-      cmd: export LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin; export PATH=$LLVM_DIR/:$PATH
-      chdir: /home/vagrant/testbench/coreutils
-      
+# this step needs to be done manually if clang-7 is not found 
+- name: Add to PATH
+  copy:
+    content: "export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin"
+    dest: "/etc/profile.d/my_path.sh"   
+    
   - name: Configuring the Coreutils compiler for tempSpec
     shell:
       cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"

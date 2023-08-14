@@ -18,6 +18,7 @@
         - libmpc-dev
         - texinfo
         - binutils-dev
+        - bison
 
       state: latest
       update_cache: true
