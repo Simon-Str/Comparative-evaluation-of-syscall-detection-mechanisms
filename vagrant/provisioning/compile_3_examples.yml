@@ -11,7 +11,7 @@
       state: latest
       update_cache: true
       
-  # coreutils for ls
+
   - name: Creating examples directory
     file:
       path: /home/vagrant/testbench
@@ -24,16 +24,34 @@
       clone: yes
       update: yes
       
+  - name: Download und unarchive Diffutils-3.8
+    ansible.builtin.unarchive:
+      src: https://ftp.gnu.org/gnu/diffutils/diffutils-3.8.tar.xz
+      dest: /home/vagrant/testbench/
+      remote_src: yes
+      
+  - name: Download und unarchive Fileutils-5.39
+    ansible.builtin.unarchive:
+      src: http://ftp.astron.com/pub/file/file-5.39.tar.gz
+      dest: /home/vagrant/testbench/
+      remote_src: yes
+# Change ownership of everything to user vagrant because ./configure shouldnt be run as root but logs are owned by root
+  - name: Change ownership of everything to user vagrant
+    shell:
+      cmd: chown -R vagrant *
+      chdir: /home/vagrant/
+    
+# this step needs to be done manually if clang-7 is not found 
+  - name: Add to PATH
+    copy:
+      content: "export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin"
+      dest: "/etc/profile.d/my_path.sh"
+      
+# coreutils for ls    
   - name: Configuring Coreutils and grabbing submodules
     shell:
       cmd: ./bootstrap
-      chdir: /home/vagrant/testbench/coreutils
-
-# this step needs to be done manually if clang-7 is not found 
-- name: Add to PATH
-  copy:
-    content: "export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin"
-    dest: "/etc/profile.d/my_path.sh"   
+      chdir: /home/vagrant/testbench/coreutils  
     
   - name: Configuring the Coreutils compiler for tempSpec
     shell:
@@ -61,12 +79,6 @@
       chdir: /home/vagrant/testbench/coreutils/src
 
 #diffutils for diff
-  - name: Download und unarchive Diffutils-3.8
-    ansible.builtin.unarchive:
-      src: https://ftp.gnu.org/gnu/diffutils/diffutils-3.8.tar.xz
-      dest: /home/vagrant/testbench/
-      remote_src: yes
-      
   - name: Configuring Diffutils 
     shell:
       cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
@@ -88,13 +100,7 @@
       cmd: mkdir -p /home/vagrant/temporal-specialization/binaries/diff ; cp diff /home/vagrant/temporal-specialization/binaries/diff/
       chdir: /home/vagrant/testbench/diffutils-3.8/src
       
-#fileutils for file
-  - name: Download und unarchive Fileutils-5.39
-    ansible.builtin.unarchive:
-      src: http://ftp.astron.com/pub/file/file-5.39.tar.gz
-      dest: /home/vagrant/testbench/
-      remote_src: yes
-      
+#fileutils for file 
   - name: Configuring Fileutils 
     shell:
       cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"

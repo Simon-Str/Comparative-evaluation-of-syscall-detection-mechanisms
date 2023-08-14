@@ -143,11 +143,6 @@
     shell:
       cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
       chdir: /home/vagrant/temporal-specialization/SVF
-
-  - name: Configuring Call-graph extraction
-    shell:
-      cmd:  export SVF_HOME=/home/vagrant/temporal-specialization/SVF/; export PATH=$SVF_HOME/Release-build/bin:$PATH
-      chdir: /home/vagrant/temporal-specialization
       
   - name: Download und unarchive vanilla SVF 1.7
     ansible.builtin.unarchive:
