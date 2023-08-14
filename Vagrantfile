@@ -1,10 +1,7 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-ENV["LC_ALL"] = "de_DE.UTF-8"
-
 Vagrant.configure("2") do |config|
-
   config.vm.define "ubuntu_jammy_desktop"
   config.vm.box = "ubuntu/jammy64"
   #config.vm.network "private_network", :type => 'dhcp'
@@ -18,6 +15,7 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--vram", "128"]
     vb.customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']
     vb.customize ['modifyvm', :id, '--draganddrop', 'bidirectional']
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
    # vb.customize ["modifyvm", :id, "--nic2", "hostonly", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"]
   end
   config.vm.synced_folder "vagrant" , "/vagrant", :mount_options => ["ro"]
