@@ -1,7 +1,8 @@
 ---
 - hosts: all 
   become: yes 
-  become_user: vagrant
+  environment: 
+    PATH: $PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
   tasks:
   - name: installing package dependencies
     apt: 
