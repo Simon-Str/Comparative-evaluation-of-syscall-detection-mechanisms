@@ -40,7 +40,6 @@
         - cmake
         - python3-pip
         - bpfcc-tools
-        #- linux-headers-$(uname -r)
       state: latest 
       update_cache: true
 

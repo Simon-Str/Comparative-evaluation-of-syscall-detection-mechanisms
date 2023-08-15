@@ -31,12 +31,12 @@
       clone: yes
       update: yes
 
-  # - name: Cloning Chestnut
-    # git:
-      # repo: https://github.com/IAIK/Chestnut
-      # dest: /home/vagrant/chestnut
-      # clone: yes
-      # update: yes
+  - name: Cloning Chestnut
+    git:
+      repo: https://github.com/IAIK/Chestnut
+      dest: /home/vagrant/chestnut
+      clone: yes
+      update: yes
 
   - name: Cloning Temporal-Specialization
     git:
@@ -45,22 +45,22 @@
       clone: yes
       update: yes
 
-  # - name: Cloning Fuzzypol
-    # git:
-      # repo: https://gitlab.com/iot-aalen/fuzzypol.git
-      # dest: /home/vagrant/fuzzypol/fuzzypol
-      # clone: yes
-      # update: yes
+  - name: Cloning Fuzzypol
+    git:
+      repo: https://gitlab.com/iot-aalen/fuzzypol.git
+      dest: /home/vagrant/fuzzypol/fuzzypol
+      clone: yes
+      update: yes
 
-  # - name: Installing Python Dependencies for Fuzzypol
-    # shell:
-      # cmd: pip install numpy py
-      # chdir: /home/vagrant/fuzzypol/fuzzypol/fuzzypol
+  - name: Installing Python Dependencies for Fuzzypol
+    shell:
+      cmd:  pip install numpy py
+      chdir: /home/vagrant/fuzzypol/fuzzypol/fuzzypol
 
-  # - name: Change Ownership to Vagrant
-    # shell:
-      # cmd: chown -R vagrant sysfilter; chown -R vagrant chestnut; chown -R vagrant temporal-specialization
-      # chdir: /home/vagrant/
+  - name: Change Ownership to Vagrant
+    shell:
+      cmd:  chown -R vagrant *
+      chdir: /home/vagrant/
 
   - name: Building Sysfilter Tool
     shell:
@@ -70,12 +70,12 @@
 
   - name: Running a Test on Sysfilter
     shell:
-      cmd:   printf '%s\n' '#include <stdio.h>' 'int main(void) {' 'return 0;' '}' > test.c ; gcc -g test.c -o test.o ;  app/sysfilter_extract -v -o test.json test.o
+      cmd:  printf '%s\n' '#include <stdio.h>' 'int main(void) {' 'return 0;' '}' > test.c ; gcc -g test.c -o test.o ;  app/sysfilter_extract -v -o test.json test.o
       chdir: /home/vagrant/sysfilter/extraction
 
   - name: Copy Sysfilter to /usr/bin/
     shell:
-      cmd:   cp sysfilter_extract /usr/bin/
+      cmd:  cp sysfilter_extract /usr/bin/
       chdir: /home/vagrant/sysfilter/extraction/app
 
   - name: Copy Analyze Binary Script
@@ -126,17 +126,16 @@
     shell:
       cmd:  tar -Jxvf llvm-7.0.0.src.wclang.tar.xz
       chdir: /home/vagrant/temporal-specialization/
-
+ 
   - name: Configuring LLVM-7
     shell:
       cmd:  mkdir build; cd build; cmake -G "Unix Makefiles" -DLLVM_BINUTILS_INCDIR=/path/to/binutils/include -DLLVM_TARGETS_TO_BUILD="X86" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../install ../
       chdir: /home/vagrant/temporal-specialization/llvm-7.0.0.src
-
+ 
   - name: Building LLVM-7
     shell:
       cmd:  make -j$(nproc) && make install
       chdir: /home/vagrant/temporal-specialization/llvm-7.0.0.src/build
-      
       
   - name: Building SVF
     shell:
@@ -154,29 +153,24 @@
       cmd:  LLVM_DIR=/home/vagrant/temporal-specialization/llvm-7.0.0.src/build PATH=$LLVM_DIR/:$PATH ./build.sh && cd Release-build/
       chdir: /home/vagrant/temporal-specialization/SVF-SVF-1.7
       
+  - name: Binalyzer Install Pip requirements
+    shell:
+      cmd:  pip3 install -r requirements.txt
+      chdir: /home/vagrant/chestnut/Binalyzer
 
-  # - name: Binalyzer Install Pip requirements
-    # shell:
-      # cmd:  pip3 install -r requirements.txt
-      # chdir: /home/vagrant/chestnut/Binalyzer
+  - name: Building Dynalyzer
+    shell:
+      cmd:  make -j$(nproc)
+      chdir: /home/vagrant/chestnut/Dynalyzer
 
-  # - name: Building Dynalyzer
-    # shell:
-      # cmd:  make -j$(nproc)
-      # chdir: /home/vagrant/chestnut/Dynalyzer
+  - name: Copy Fix for Build Script
+    ansible.builtin.copy:
+      src: /vagrant/provisioning/download-and-build-fix.sh
+      dest: /home/vagrant/chestnut/Sourcealyzer/
+      mode: '0755'
+      remote_src: yes
 
-  # - name: Copy Fix for Build Script
-    # ansible.builtin.copy:
-      # src: /vagrant/provisioning/download-and-build-fix.sh
-      # dest: /home/vagrant/chestnut/Sourcealyzer/
-      # mode: '0755'
-      # remote_src: yes
-
-  # - name: Building Sourcealyzer
-    # shell:
-    
-      # cmd: |
-       # echo -e "\033[0;31mThis may take 2 hours, progress cannot be shown by ansible...\033[0m"
-       # echo -e "\033[0;31mAlternative: You can interrupt ansible and run it manually. \033[0m"
-       # ./download-and-build-fix.sh
-      # chdir: /home/vagrant/chestnut/Sourcealyzer/
+  - name: Building Sourcealyzer
+    shell:
+      cmd:  ./download-and-build-fix.sh
+      chdir: /home/vagrant/chestnut/Sourcealyzer/

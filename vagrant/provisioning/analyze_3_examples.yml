@@ -2,15 +2,7 @@
 - hosts: all 
   become: yes 
   tasks:
-  - name: installing package dependencies
-    apt: 
-      name: 
-        # - autoconf
-        # - autopoint
-        # - gperf
-      state: latest
-      update_cache: true
-      
+  
   - name: Create results dir for ls
     shell:
       cmd: mkdir -p /home/vagrant/testbench/results/ls

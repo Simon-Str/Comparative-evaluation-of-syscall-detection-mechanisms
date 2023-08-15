@@ -4,7 +4,6 @@
 Vagrant.configure("2") do |config|
   config.vm.define "ubuntu_jammy_desktop"
   config.vm.box = "ubuntu/jammy64"
-  # config.vm.network "private_network", :type => 'dhcp'
   config.vagrant.plugins = "vagrant-vbguest"
   config.vm.provider "virtualbox" do |vb|
     vb.cpus = 2
@@ -18,7 +17,6 @@ Vagrant.configure("2") do |config|
    # vb.customize ["modifyvm", :id, "--ioapic", "on"]
     vb.customize ["modifyvm", :id, "--usb", "on"]
     vb.customize ["modifyvm", :id, "--mouse", "usbtablet"]
-   # vb.customize ["modifyvm", :id, "--nic2", "hostonly", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"]
   end
   config.vm.synced_folder "vagrant" , "/vagrant", :mount_options => ["ro"]
   config.vm.synced_folder "synced_folder" , "/synced_folder/", type: "virtualbox", :mount_options => ['dmode=777','fmode=775'], automount: true
@@ -39,37 +37,30 @@ Vagrant.configure("2") do |config|
   # Permit password authentication because broken vagrant publickey authentication
   config.vm.provision "shell", inline: "sudo sed -i 's/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config; sudo systemctl restart sshd;", run: "always"
   
-  # config.vm.provision "Ansible Test", type: "ansible_local" do |ansible|
-    # ansible.verbose = "vv" 
-    # ansible.playbook = "test.yml"
-    # ansible.provisioning_path = "/vagrant/provisioning"
-    # ansible.inventory_path = "inventory"
-    # ansible.limit = "all"
-  # end
   
-  # config.vm.provision "ansible_local" do |ansible|
-    # ansible.verbose = "v" 
-    # ansible.playbook = "master_playbook.yml"
-    # ansible.provisioning_path = "/vagrant/provisioning"
-    # ansible.inventory_path = "inventory"
-    # ansible.limit = "all"
-  # end
+  config.vm.provision "ansible_local" do |ansible|
+    ansible.verbose = "v" 
+    ansible.playbook = "master_playbook.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
 
-  # config.vm.provision "install_klee", type: "ansible_local" do |ansible|
-    # ansible.verbose = "v" 
-    # ansible.playbook = "klee_installation.yml"
-    # ansible.provisioning_path = "/vagrant/provisioning"
-    # ansible.inventory_path = "inventory"
-    # ansible.limit = "all"
-  # end
+  config.vm.provision "install_klee", type: "ansible_local" do |ansible|
+    ansible.verbose = "v" 
+    ansible.playbook = "klee_installation.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
 
-  # config.vm.provision "install_examples", type: "ansible_local" do |ansible|
-    # ansible.verbose = "v" 
-    # ansible.playbook = "install_examples.yml"
-    # ansible.provisioning_path = "/vagrant/provisioning"
-    # ansible.inventory_path = "inventory"
-    # ansible.limit = "all"
-  # end
+  config.vm.provision "install_examples", type: "ansible_local" do |ansible|
+    ansible.verbose = "v" 
+    ansible.playbook = "install_examples.yml"
+    ansible.provisioning_path = "/vagrant/provisioning"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "all"
+  end
   
   config.vm.provision "Takes long: install_sysfilter_tempSpecial_chestnut", type: "ansible_local" do |ansible|
     ansible.verbose = "v" 
@@ -79,7 +70,7 @@ Vagrant.configure("2") do |config|
     ansible.limit = "all"
   end
   
-  config.vm.provision "Install Simon examples", type: "ansible_local" do |ansible|
+  config.vm.provision "Install Testbench", type: "ansible_local" do |ansible|
     ansible.verbose = "v" 
     ansible.playbook = "compile_3_examples.yml"
     ansible.provisioning_path = "/vagrant/provisioning"
@@ -87,7 +78,7 @@ Vagrant.configure("2") do |config|
     ansible.limit = "all"
   end
   
-  config.vm.provision "Analyze Simon examples", type: "ansible_local" do |ansible|
+  config.vm.provision "Analyze Testbench", type: "ansible_local" do |ansible|
     ansible.verbose = "v" 
     ansible.playbook = "analyze_3_examples.yml"
     ansible.provisioning_path = "/vagrant/provisioning"
