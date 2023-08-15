@@ -1,6 +1,7 @@
 ---
 - hosts: all 
   become: yes 
+  become_user: vagrant
   tasks:
   - name: installing package dependencies
     apt: 
