@@ -4,7 +4,7 @@
 Vagrant.configure("2") do |config|
   config.vm.define "ubuntu_jammy_desktop"
   config.vm.box = "ubuntu/jammy64"
-  #config.vm.network "private_network", :type => 'dhcp'
+  # config.vm.network "private_network", :type => 'dhcp'
   config.vagrant.plugins = "vagrant-vbguest"
   config.vm.provider "virtualbox" do |vb|
     vb.cpus = 2
@@ -15,7 +15,9 @@ Vagrant.configure("2") do |config|
     vb.customize ["modifyvm", :id, "--vram", "128"]
     vb.customize ['modifyvm', :id, '--clipboard-mode', 'bidirectional']
     vb.customize ['modifyvm', :id, '--draganddrop', 'bidirectional']
-    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+   # vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--usb", "on"]
+    vb.customize ["modifyvm", :id, "--mouse", "usbtablet"]
    # vb.customize ["modifyvm", :id, "--nic2", "hostonly", "--hostonlyadapter2", "VirtualBox Host-Only Ethernet Adapter"]
   end
   config.vm.synced_folder "vagrant" , "/vagrant", :mount_options => ["ro"]

@@ -47,6 +47,11 @@
       content: "export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin"
       dest: "/etc/profile.d/my_path.sh"
       
+  - name: Load profile changes in shell
+    shell:
+      cmd: source /etc/profile.d/my_path.sh
+      chdir: /home/vagrant/
+
 # coreutils for ls    
   - name: Configuring Coreutils and grabbing submodules
     shell:
@@ -55,7 +60,9 @@
     
   - name: Configuring the Coreutils compiler for tempSpec
     shell:
-      cmd: ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
+      cmd: |
+       # export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
+       ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
       chdir: /home/vagrant/testbench/coreutils
       
   - name: Removing old make attempts
