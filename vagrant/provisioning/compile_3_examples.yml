@@ -43,15 +43,10 @@
     
 # this step needs to be done manually if clang-7 is not found 
   - name: Add to PATH
-    copy:
-      content: "export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin"
-      dest: "/etc/profile.d/my_path.sh"
-      
-  - name: Load profile changes in shell
     shell:
-      cmd: source /etc/profile.d/my_path.sh
+      cmd: export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
       chdir: /home/vagrant/
-
+      
 # coreutils for ls    
   - name: Configuring Coreutils and grabbing submodules
     shell:
