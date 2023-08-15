@@ -58,10 +58,11 @@
       cmd: ./bootstrap
       chdir: /home/vagrant/testbench/coreutils  
     
+# if this fails export temporal-specialization/llvm-7.0.0.src/build/bin to PATH
   - name: Configuring the Coreutils compiler for tempSpec
     shell:
       cmd: |
-       # export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
+       export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
        ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
       chdir: /home/vagrant/testbench/coreutils
       
