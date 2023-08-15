@@ -31,12 +31,12 @@
       clone: yes
       update: yes
 
-  - name: Cloning Chestnut
-    git:
-      repo: https://github.com/IAIK/Chestnut
-      dest: /home/vagrant/chestnut
-      clone: yes
-      update: yes
+  # - name: Cloning Chestnut
+    # git:
+      # repo: https://github.com/IAIK/Chestnut
+      # dest: /home/vagrant/chestnut
+      # clone: yes
+      # update: yes
 
   - name: Cloning Temporal-Specialization
     git:
@@ -45,22 +45,22 @@
       clone: yes
       update: yes
 
-  - name: Cloning Fuzzypol
-    git:
-      repo: https://gitlab.com/iot-aalen/fuzzypol.git
-      dest: /home/vagrant/fuzzypol/fuzzypol
-      clone: yes
-      update: yes
+  # - name: Cloning Fuzzypol
+    # git:
+      # repo: https://gitlab.com/iot-aalen/fuzzypol.git
+      # dest: /home/vagrant/fuzzypol/fuzzypol
+      # clone: yes
+      # update: yes
 
-  - name: Installing Python Dependencies for Fuzzypol
-    shell:
-      cmd: pip install numpy py
-      chdir: /home/vagrant/fuzzypol/fuzzypol/fuzzypol
+  # - name: Installing Python Dependencies for Fuzzypol
+    # shell:
+      # cmd: pip install numpy py
+      # chdir: /home/vagrant/fuzzypol/fuzzypol/fuzzypol
 
-  - name: Change Ownership to Vagrant
-    shell:
-      cmd: chown -R vagrant sysfilter; chown -R vagrant chestnut; chown -R vagrant temporal-specialization
-      chdir: /home/vagrant/
+  # - name: Change Ownership to Vagrant
+    # shell:
+      # cmd: chown -R vagrant sysfilter; chown -R vagrant chestnut; chown -R vagrant temporal-specialization
+      # chdir: /home/vagrant/
 
   - name: Building Sysfilter Tool
     shell:
@@ -106,7 +106,6 @@
       mode: '0755'
       remote_src: yes          
       
-
   - name: Load Submodules
     shell:
       cmd:  git submodule update --init --recursive

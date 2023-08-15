@@ -36,6 +36,7 @@
       src: http://ftp.astron.com/pub/file/file-5.39.tar.gz
       dest: /home/vagrant/testbench/
       remote_src: yes
+      
 # Change ownership of everything to user vagrant because ./configure shouldnt be run as root but logs are owned by root
   - name: Change ownership of everything to user vagrant
     shell:
@@ -61,7 +62,9 @@
        export PATH=$PATH:/home/vagrant/temporal-specialization/llvm-7.0.0.src/build/bin
        ./configure AR=llvm-ar CC=clang-7 CXX=clang-7 LD=/usr/bin/ld CFLAGS="-flto -O0" CXXFLAGS="-flto -O0" LDFLAGS="-flto -Wl,-plugin-opt=save-temps"
       chdir: /home/vagrant/testbench/coreutils
-      
+      become_user: vagrant
+      become: true
+    
   - name: Removing old make attempts
     shell:
       cmd: make clean
