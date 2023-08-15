@@ -1,1 +1,0 @@
-# Comparisation-of-Syscall-Detection-Mechanisms
